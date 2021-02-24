@@ -16,10 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.vector.gradecurricular.entity.MateriaEntity;
 import br.com.vector.gradecurricular.repository.IMateriaRepository;
+import br.com.vector.gradecurricular.service.IMateriaService;
 
 @RestController
 @RequestMapping("/materia")
 public class MateriaController {
+	
+	@Autowired
+	private IMateriaService materiaService;
 	
 	@Autowired
 	private IMateriaRepository materiaRepository;
@@ -38,44 +42,41 @@ public class MateriaController {
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Boolean> excluirMateria(@PathVariable Long id) {
-		try {
-			if (materiaRepository.findById(id).isPresent()) {
-				materiaRepository
-				.delete(materiaRepository.findById(id).get());
-				
-			}
+		
+		Boolean resultado = materiaService.excluir(id);
+		
+		if (resultado) {
 			return ResponseEntity.status(HttpStatus.OK).body(true);
-		} catch (Exception e) {
+		} else {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
 		}
+		
 	}
 	
 	@PutMapping
 	public ResponseEntity <Boolean> atualizaMateria(@RequestBody MateriaEntity materia) {
-		try {
-			MateriaEntity materiaEntityAtualizada = this.materiaRepository.findById(materia.getId()).get();
-			
-			materiaEntityAtualizada.setNome(materia.getNome());
-			materiaEntityAtualizada.setCodigo(materia.getCodigo());
-			materiaEntityAtualizada.setHoras(materia.getHoras());
-			materiaEntityAtualizada.setFrequencia(materia.getFrequencia());
-			
-			this.materiaRepository.save(materiaEntityAtualizada);
-			
+		
+		Boolean resultado = materiaService.atualizar(materia);
+		
+		if (resultado) {
 			return ResponseEntity.status(HttpStatus.OK).body(true);
-		} catch (Exception e) {
+		} else {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
 		}
+		
 	}
 	
 	@PostMapping
 	public ResponseEntity<Boolean> cadastrarMateria(@RequestBody MateriaEntity materia) {
-		try {
-			this.materiaRepository.save(materia);
+		
+		Boolean resultado = materiaService.salvar(materia);
+		
+		if (resultado) {
 			return ResponseEntity.status(HttpStatus.OK).body(true);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.OK).body(false);
+		} else {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
 		}
+		
 	}
 
 }
